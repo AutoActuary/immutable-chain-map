@@ -85,6 +85,9 @@ class ImmutableChainMap(Mapping[K, V]):
         self._ci = ci
 
     def __contains__(self, key: object) -> bool:
+        if not self._ci:
+            return any(key in mapping for mapping in self._maps)
+
         lookup_key = key.casefold() if self._ci and isinstance(key, str) else key
         for mapping in self._maps:
             for original_key in mapping.keys():
@@ -97,6 +100,14 @@ class ImmutableChainMap(Mapping[K, V]):
         return False
 
     def __getitem__(self, key: K) -> V:
+        if not self._ci:
+            for mapping in self._maps:
+                try:
+                    return mapping[key]
+                except KeyError:
+                    pass
+            raise KeyError(key)
+
         lookup_key = key.casefold() if self._ci and isinstance(key, str) else key
         for mapping in self._maps:
             for original_key in mapping.keys():
@@ -122,4 +133,4 @@ class ImmutableChainMap(Mapping[K, V]):
                     seen.add(lookup_key)
 
     def __len__(self) -> int:
-        return len(list(iter(self)))
+        return sum(1 for _ in self)

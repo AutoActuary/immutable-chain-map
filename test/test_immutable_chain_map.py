@@ -18,6 +18,11 @@ class ReadOnlyMapping(Mapping[str, int]):
         return len(self._data)
 
 
+class KeysAreNotForLookupMapping(ReadOnlyMapping):
+    def keys(self):
+        raise AssertionError("case-sensitive lookup should not scan keys")
+
+
 class TestImmutableChainMap(unittest.TestCase):
     def test_lookups_and_precedence(self) -> None:
         foo = ImmutableChainMap({"a": 1}, {"a": 2, "b": 3})
@@ -51,3 +56,11 @@ class TestImmutableChainMap(unittest.TestCase):
         foo = ImmutableChainMap(ReadOnlyMapping({"a": 1}), ReadOnlyMapping({"b": 2}))
         self.assertEqual(["a", "b"], list(foo))
         self.assertEqual(2, foo["b"])
+
+    def test_case_sensitive_lookup_uses_mapping_access(self) -> None:
+        foo = ImmutableChainMap(KeysAreNotForLookupMapping({"a": 1}))
+        self.assertIn("a", foo)
+        self.assertNotIn("b", foo)
+        self.assertEqual(1, foo["a"])
+        with self.assertRaises(KeyError):
+            _ = foo["b"]
