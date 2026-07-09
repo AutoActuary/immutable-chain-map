@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools", "setuptools_scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "immutable-chain-map"
+description = "A Python class similar to ChainMap, but works with any Mapping and not just MutableMapping."
+readme = "README.md"
+dynamic = ["version"]
+dependencies = [ ]
+authors = [
+    {name = "Rudolf Byker", email = "rudolfbyker@gmail.com"},
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+license = {file = 'LICENSE'}
+requires-python = ">=3.11"
+
+[project.urls]
+repository = "https://github.com/AutoActuary/immutable-chain-map"
+
+[tool.setuptools_scm]
+write_to = "src/case_insensitive_string_set/version.py"
